@@ -7,15 +7,34 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Сервис для управления журналом успеваемости студентов.
+ * Обеспечивает добавление оценок, отслеживание попыток пересдач,
+ * а также вычисление статистических показателей и рейтингов.
+ */
 public class GradebookService {
 
     private List<Assessment> magazine;
     private final static int MAX_ATTEMPTS = 3;
 
+    /**
+     * Создает новый экземпляр сервиса с пустым журналом оценок.
+     */
     public GradebookService() {
         magazine = new ArrayList<>();
     }
 
+    /**
+     * Добавляет новую оценку за контрольную точку для указанного студента.
+     *
+     * @param student студент, получающий оценку
+     * @param controlPoint контрольная точка, за которую выставляется оценка
+     * @param score количество полученных баллов
+     * @param date дата сдачи
+     * @return созданный объект {@link Assessment}
+     * @throws InvalidScoreException если балл отрицательный или превышает максимально допустимый для КТ
+     * @throws RetakeLimitExceededException если количество попыток сдачи превышает установленный лимит (3)
+     */
     public Assessment addAssessment(Student student, ControlPoint controlPoint, int score, LocalDate date) {
         if (score < 0 || score > controlPoint.getMaxScore()) {
             throw new InvalidScoreException("Балл должен быть от 0 до " + controlPoint.getMaxScore());
@@ -37,6 +56,12 @@ public class GradebookService {
         return newAssessment;
     }
 
+    /**
+     * Возвращает список только последних попыток сдачи для каждого предмета/КТ указанного студента.
+     *
+     * @param student студент, для которого ищутся оценки
+     * @return список актуальных (последних по номеру попытки) оценок
+     */
     private List<Assessment> getLatestAssessmentsForStudent(Student student) {
         List<Assessment> latest = new ArrayList<>();
 
@@ -61,6 +86,12 @@ public class GradebookService {
         return latest;
     }
 
+    /**
+     * Возвращает список отличников в группе (студенты, у которых все последние оценки не ниже 85 баллов).
+     *
+     * @param group учебная группа
+     * @return список студентов-отличников
+     */
     public List<Student> getExcellentStudents(Group group) {
         List<Student> result = new ArrayList<>();
 
@@ -86,6 +117,12 @@ public class GradebookService {
         return result;
     }
 
+    /**
+     * Возвращает список должников в группе (студенты, имеющие хотя бы одну актуальную оценку ниже 50 баллов).
+     *
+     * @param group учебная группа
+     * @return список студентов-должников
+     */
     public List<Student> getDebtors(Group group) {
         List<Student> debtors = new ArrayList<>();
 
@@ -95,13 +132,20 @@ public class GradebookService {
             for (Assessment a : studentAssessments) {
                 if (a.getScore() < 50) {
                     debtors.add(student);
-                    break; // Достаточно одного долга
+                    break;
                 }
             }
         }
         return debtors;
     }
 
+    /**
+     * Формирует ведомость оценок по заданной дисциплине, выставленных не позднее указанной даты.
+     *
+     * @param discipline дисциплина
+     * @param date граничная дата включения оценок в ведомость
+     * @return список оценок для ведомости
+     */
     public List<Assessment> getDisciplineStatement(Discipline discipline, LocalDate date) {
         List<Assessment> statement = new ArrayList<>();
 
@@ -116,6 +160,13 @@ public class GradebookService {
         return statement;
     }
 
+    /**
+     * Вычисляет средний балл группы по конкретной дисциплине на основе последних попыток сдачи.
+     *
+     * @param group учебная группа
+     * @param discipline дисциплина
+     * @return средний балл группы (0.0, если оценок нет)
+     */
     public double getGroupAverageScore(Group group, Discipline discipline) {
         double totalScore = 0;
         int count = 0;
@@ -137,6 +188,12 @@ public class GradebookService {
         return totalScore / count;
     }
 
+    /**
+     * Вычисляет взвешенный рейтинг студента с учетом весов контрольных точек.
+     *
+     * @param student студент
+     * @return взвешенный рейтинг (0.0, если оценок нет или суммарный вес равен 0)
+     */
     public double getStudentRating(Student student) {
         List<Assessment> latest = getLatestAssessmentsForStudent(student);
         if (latest.isEmpty()) {
@@ -159,6 +216,12 @@ public class GradebookService {
         return weightedSum / totalWeight;
     }
 
+    /**
+     * Вычисляет средний балл студента по всем контрольным точкам (на основе последних попыток).
+     *
+     * @param student студент
+     * @return средний балл (0.0, если оценок нет)
+     */
     public double getStudentAverageScore(Student student) {
         List<Assessment> latestAssessments = getLatestAssessmentsForStudent(student);
         if (latestAssessments.isEmpty()) {
