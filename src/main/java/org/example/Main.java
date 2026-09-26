@@ -6,6 +6,7 @@ import org.example.service.GradebookService;
 import java.time.LocalDate;
 import java.util.List;
 
+// Запуск
 public class Main {
     public static void main(String[] args) {
         System.out.println("=== Запуск системы 'Журнал успеваемости' ===");

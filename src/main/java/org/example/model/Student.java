@@ -2,6 +2,7 @@ package org.example.model;
 
 import java.util.Objects;
 
+// Студент
 public class Student {
     private final String recordBookNumber;
     private String fullName;

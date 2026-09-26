@@ -1,5 +1,6 @@
 package org.example.model;
 
+// Дисциплина
 public class Discipline {
     private String id;
     private String title;

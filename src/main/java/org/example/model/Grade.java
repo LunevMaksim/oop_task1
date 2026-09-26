@@ -2,6 +2,7 @@ package org.example.model;
 
 import org.example.exception.InvalidScoreException;
 
+// Допустимые оценки
 public enum Grade {
 
     EXCELLENT,

@@ -2,6 +2,7 @@ package org.example.model;
 
 import java.time.LocalDate;
 
+// Запись об оценке
 public class Assessment {
     private Student student;
     private ControlPoint controlPoint;

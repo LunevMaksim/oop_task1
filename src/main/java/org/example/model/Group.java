@@ -3,6 +3,7 @@ package org.example.model;
 import java.util.ArrayList;
 import java.util.List;
 
+// Учбеная группа
 public class Group {
     private String id;
     private String name;

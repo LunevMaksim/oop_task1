@@ -1,5 +1,6 @@
 package org.example.model;
 
+// Тест или экзамен
 public class ControlPoint {
     private String id;
     private String name;
